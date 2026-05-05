@@ -1,0 +1,31 @@
+# Конфигурация сборки сравнительной таблицы изданий Tantor DB
+#
+# Каждая секция [versions."<номер>"] описывает одну major-версию:
+#   editions — список изданий, которые надо собирать в таблицу
+#   conf     — путь к conf.json данной версии
+#   contrib  — путь к contrib.json данной версии
+
+[versions."18"]
+editions = ["be", "se", "se1c"]
+conf     = "/home/kot/repo/tantor-db-18_1/tantor/conf.json"
+contrib  = "/home/kot/repo/tantor-db-18_1/tantor/contrib/contrib.json"
+
+[versions."17"]
+editions = ["be", "se", "se1c", "certified", "certified_2"]
+conf     = "/home/kot/repo/tantor-db-17_9/tantor/conf.json"
+contrib  = "/home/kot/repo/tantor-db-17_9/tantor/contrib/contrib.json"
+
+[versions."16"]
+editions = ["be", "se", "se1c", "certified"]
+conf     = "/home/kot/repo/tantor-db-16_13/tantor/conf.json"
+contrib  = "/home/kot/repo/tantor-db-16_13/tantor/contrib/contrib.json"
+
+[versions."15"]
+editions = ["be", "se", "se1c", "certified"]
+conf     = "/home/kot/repo/tantor-db-15_17/tantor/conf.json"
+contrib  = "/home/kot/repo/tantor-db-15_17/tantor/contrib/contrib.json"
+
+[versions."14"]
+editions = ["be", "se", "se1c"]
+conf     = "/home/kot/repo/tantor-db-14_22/tantor/conf.json"
+contrib  = "/home/kot/repo/tantor-db-14_22/tantor/contrib/contrib.json"
