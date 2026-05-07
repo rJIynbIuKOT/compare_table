@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import traceback
 from html import escape
@@ -173,6 +174,61 @@ def _try_load_json(path: Path, prefix: str, label: str, errors: list[str]) -> di
     return data
 
 
+# Maps internal `kind` ("patch"/"util"/"contrib") to a TOML section name.
+# `descriptions.toml` uses plural section names matching the table headings.
+_DESC_SECTION = {"patch": "patches", "util": "utils", "contrib": "contrib"}
+
+
+def load_descriptions(path: Path) -> dict[str, dict[str, str]]:
+    """Load human-readable descriptions for patches/utils/contrib from a TOML
+    file. Returns a dict keyed by internal `kind` -> {name: description}.
+
+    The file is optional. If it does not exist, an empty mapping is returned
+    so the Description column is rendered as blank for every row.
+
+    Expected layout (all sections optional):
+
+        [patches]
+        "fix/common"         = "Описание патча"
+        "func/jit"           = '''Многострочное
+        описание тоже работает.'''
+
+        [utils]
+        "data_generator"     = "Описание утилиты"
+
+        [contrib]
+        "pg_cron"            = "Описание расширения"
+    """
+    empty: dict[str, dict[str, str]] = {k: {} for k in _DESC_SECTION}
+    if not path.is_file():
+        print(f"описания: файл не найден ({path}), столбец Description будет пустым",
+              file=sys.stderr)
+        return empty
+
+    try:
+        with path.open("rb") as f:
+            data = tomllib.load(f)
+    except tomllib.TOMLDecodeError as e:
+        print(f"описания: не удалось распарсить {path}: {e} — столбец будет пустым",
+              file=sys.stderr)
+        return empty
+
+    result: dict[str, dict[str, str]] = {k: {} for k in _DESC_SECTION}
+    for kind, section in _DESC_SECTION.items():
+        section_data = data.get(section) or {}
+        if not isinstance(section_data, dict):
+            print(f"описания: секция [{section}] в {path} должна быть таблицей — пропущено",
+                  file=sys.stderr)
+            continue
+        for name, desc in section_data.items():
+            if isinstance(desc, str):
+                result[kind][name] = desc
+            else:
+                print(f"описания: [{section}].{name!r} должен быть строкой — пропущено",
+                      file=sys.stderr)
+    return result
+
+
 def collect(config: dict, loaded: dict[str, tuple[dict, dict]]):
     """
     Walk every (version, edition) listed in config.toml and collect:
@@ -235,19 +291,70 @@ def _mark(features: set[tuple[str, str]], kind: str, name: str) -> str:
     return "y" if (kind, name) in features else ""
 
 
-def render_markdown(columns, cell, patches, utils, contribs) -> str:
-    headers = ["Feature"] + [f"{v}/{e}" for v, e in columns]
+# Shown in the Description column whenever a row has no entry in
+# descriptions.toml (or its value is an empty string).
+MISSING_DESCRIPTION = "Нет описания в descriptions.toml"
+
+
+def _describe(descriptions: dict[str, dict[str, str]], kind: str, name: str) -> str:
+    """Return the description for (kind, name) or a placeholder if it is
+    missing or empty in descriptions.toml."""
+    return descriptions.get(kind, {}).get(name, "") or MISSING_DESCRIPTION
+
+
+def _md_escape(s: str) -> str:
+    """Make a string safe for inclusion in a single Markdown table cell:
+    escape pipe characters and collapse newlines to <br> so the row stays
+    on one line."""
+    return s.replace("|", "\\|").replace("\r\n", "\n").replace("\n", "<br>")
+
+
+# Markdown → HTML helpers for the Description column.
+#
+# Descriptions in descriptions.toml may use a small Markdown subset:
+#   * `inline code`            -> <code>...</code>
+#   * [link text](https://...) -> <a href="...">link text</a>
+#   * literal newlines (from   -> <br>
+#     '''...''' TOML strings)
+#
+# The Markdown output simply re-uses the user's Markdown as-is (only `|` and
+# newlines get rewritten so the table stays valid), so this conversion runs
+# only when rendering comparison.html.
+_MD_LINK_RE = re.compile(r"\[([^\]\n]+)\]\(([^)\s]+)\)")
+_MD_INLINE_CODE_RE = re.compile(r"`([^`\n]+)`")
+
+
+def _md_to_html(s: str) -> str:
+    """Render a description (small Markdown subset) as a fragment of HTML.
+
+    The whole input is HTML-escaped first, so any literal `<`, `>`, `&`, `"`
+    in user text show up as entities. Then `[text](url)` and `` `code` ``
+    are rewritten into the corresponding tags, and remaining newlines are
+    turned into `<br>` so multi-line TOML values keep visible line breaks
+    in the browser.
+    """
+    s = escape(s)
+    s = _MD_LINK_RE.sub(r'<a href="\2">\1</a>', s)
+    s = _MD_INLINE_CODE_RE.sub(r"<code>\1</code>", s)
+    s = s.replace("\r\n", "\n").replace("\n", "<br>")
+    return s
+
+
+def render_markdown(columns, cell, patches, utils, contribs, descriptions) -> str:
+    headers = ["Feature", "Description"] + [f"{v}/{e}" for v, e in columns]
     lines = [
         "| " + " | ".join(headers) + " |",
         "|" + "|".join(["---"] * len(headers)) + "|",
     ]
 
     def section(title: str, kind: str, names: list[str]) -> None:
-        # Section divider row — only the first cell carries text, rest are empty.
-        empties = [""] * len(columns)
+        # Section divider row — only the first cell carries text, the rest
+        # (Description + one per data column) are empty.
+        empties = [""] * (len(columns) + 1)
         lines.append("| " + " | ".join([f"**{title}**", *empties]) + " |")
         for name in names:
-            row = [name] + [_mark(cell[c], kind, name) for c in columns]
+            desc = _md_escape(_describe(descriptions, kind, name))
+            row = [name, desc] + [_mark(cell[c], kind, name) for c in columns]
             lines.append("| " + " | ".join(row) + " |")
 
     section("patches", "patch", patches)
@@ -257,12 +364,13 @@ def render_markdown(columns, cell, patches, utils, contribs) -> str:
     return "\n".join(lines) + "\n"
 
 
-def render_html(columns, cell, patches, utils, contribs) -> str:
+def render_html(columns, cell, patches, utils, contribs, descriptions) -> str:
     # Group columns by version so the header has a tidy two-row span:
     #   row 1: 18 | 17 | 16 | 15 | 14   (each colspan = number of editions)
     #   row 2: be se se1c | be se se1c certified certified_2 | ...
     groups = [(v, list(g)) for v, g in groupby(columns, key=lambda c: c[0])]
-    total_cols = len(columns) + 1
+    # +2 fixed columns: Feature and Description.
+    total_cols = len(columns) + 2
 
     out: list[str] = []
     out.append('<table border="1" cellpadding="4" cellspacing="0">')
@@ -270,6 +378,7 @@ def render_html(columns, cell, patches, utils, contribs) -> str:
 
     out.append("<tr>")
     out.append('<th rowspan="2">Feature</th>')
+    out.append('<th rowspan="2">Description</th>')
     for v, group in groups:
         out.append(f'<th colspan="{len(group)}">{escape(v)}</th>')
     out.append("</tr>")
@@ -288,8 +397,10 @@ def render_html(columns, cell, patches, utils, contribs) -> str:
             f'style="text-align:left;background:#f0f0f0">{escape(title)}</th></tr>'
         )
         for name in names:
+            desc = _describe(descriptions, kind, name)
             out.append("<tr>")
             out.append(f"<td>{escape(name)}</td>")
+            out.append(f"<td>{_md_to_html(desc)}</td>")
             for col in columns:
                 m = _mark(cell[col], kind, name)
                 out.append(f'<td style="text-align:center">{escape(m)}</td>')
@@ -317,6 +428,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--html-out", type=Path, default=Path("comparison.html"),
         help="output HTML file (default: ./comparison.html)",
+    )
+    parser.add_argument(
+        "--descriptions", type=Path, default=Path("descriptions.toml"),
+        help="path to TOML file with descriptions for the Description column "
+             "(default: ./descriptions.toml; missing file is OK)",
     )
     args = parser.parse_args(argv)
 
@@ -354,13 +470,14 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     columns, cell, patches, utils, contribs = collect(config, loaded)
+    descriptions = load_descriptions(args.descriptions)
 
     args.md_out.write_text(
-        render_markdown(columns, cell, patches, utils, contribs),
+        render_markdown(columns, cell, patches, utils, contribs, descriptions),
         encoding="utf-8",
     )
     args.html_out.write_text(
-        render_html(columns, cell, patches, utils, contribs),
+        render_html(columns, cell, patches, utils, contribs, descriptions),
         encoding="utf-8",
     )
 
