@@ -330,13 +330,14 @@ def _md_to_html(s: str) -> str:
     The whole input is HTML-escaped first, so any literal `<`, `>`, `&`, `"`
     in user text show up as entities. Then `[text](url)` and `` `code` ``
     are rewritten into the corresponding tags, and remaining newlines are
-    turned into `<br>` so multi-line TOML values keep visible line breaks
-    in the browser.
+    turned into `<br/>` (self-closing XHTML form — required by Confluence,
+    which is strict about unclosed tags) so multi-line TOML values keep
+    visible line breaks in the browser.
     """
     s = escape(s)
     s = _MD_LINK_RE.sub(r'<a href="\2">\1</a>', s)
     s = _MD_INLINE_CODE_RE.sub(r"<code>\1</code>", s)
-    s = s.replace("\r\n", "\n").replace("\n", "<br>")
+    s = s.replace("\r\n", "\n").replace("\n", "<br/>")
     return s
 
 
