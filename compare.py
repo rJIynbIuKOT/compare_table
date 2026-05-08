@@ -54,25 +54,41 @@ class ConfigError(Exception):
         super().__init__(f"{len(errors)} problem(s) found in config")
 
 
-def prompt_use_config_paths() -> bool:
-    """Ask the user whether to use JSON paths declared in config.toml.
+def _prompt_yes_no(question: str, *, default: bool = True) -> bool:
+    """Ask `question` until the user provides a recognised yes/no answer.
 
-    Returns True for yes (default — Enter or 'yes'), False for no
-    (which means: load conf.json/contrib.json from per-version folders
-    next to the script). On non-interactive stdin (EOF), defaults to True.
-    """
-    question = "Использовать пути json из config.toml? [Y/n]: "
+    Empty input picks `default`. On non-interactive stdin (EOF) the function
+    also falls back to `default` so the script still works under cron / CI."""
+    suffix = "[Y/n]" if default else "[y/N]"
     while True:
         try:
-            answer = input(question).strip().lower()
+            answer = input(f"{question} {suffix}: ").strip().lower()
         except EOFError:
-            print("(stdin закрыт, используется значение по умолчанию: yes)")
-            return True
-        if answer in ("", "y", "yes", "д", "да"):
+            print(f"(stdin закрыт, используется значение по умолчанию: "
+                  f"{'yes' if default else 'no'})")
+            return default
+        if answer == "":
+            return default
+        if answer in ("y", "yes", "д", "да"):
             return True
         if answer in ("n", "no", "н", "нет"):
             return False
         print("  Введите yes / no (или просто Enter для значения по умолчанию).")
+
+
+def prompt_use_config_paths() -> bool:
+    """Ask whether to use JSON paths declared in config.toml.
+
+    Returns True for yes (default), False for no — meaning load
+    conf.json/contrib.json from per-version folders next to the script."""
+    return _prompt_yes_no("Использовать пути json из config.toml?", default=True)
+
+
+def prompt_add_descriptions() -> bool:
+    """Ask whether to add the Description column populated from
+    descriptions.toml. Returns True for yes (default), False to skip both
+    loading the file and rendering the column entirely."""
+    return _prompt_yes_no("Добавлять столбец Description с описаниями?", default=True)
 
 
 def override_paths_with_local_dirs(config: dict, base_dir: Path) -> None:
@@ -341,21 +357,28 @@ def _md_to_html(s: str) -> str:
     return s
 
 
-def render_markdown(columns, cell, patches, utils, contribs, descriptions) -> str:
-    headers = ["Feature", "Description"] + [f"{v}/{e}" for v, e in columns]
+def render_markdown(columns, cell, patches, utils, contribs,
+                    descriptions, with_descriptions: bool) -> str:
+    headers = ["Feature"]
+    if with_descriptions:
+        headers.append("Description")
+    headers += [f"{v}/{e}" for v, e in columns]
     lines = [
         "| " + " | ".join(headers) + " |",
         "|" + "|".join(["---"] * len(headers)) + "|",
     ]
+    # Number of empty cells in a section divider row: one for every column
+    # after Feature (Description, if present, plus one per (version, edition)).
+    empty_count = len(headers) - 1
 
     def section(title: str, kind: str, names: list[str]) -> None:
-        # Section divider row — only the first cell carries text, the rest
-        # (Description + one per data column) are empty.
-        empties = [""] * (len(columns) + 1)
+        empties = [""] * empty_count
         lines.append("| " + " | ".join([f"**{title}**", *empties]) + " |")
         for name in names:
-            desc = _md_escape(_describe(descriptions, kind, name))
-            row = [name, desc] + [_mark(cell[c], kind, name) for c in columns]
+            row = [name]
+            if with_descriptions:
+                row.append(_md_escape(_describe(descriptions, kind, name)))
+            row += [_mark(cell[c], kind, name) for c in columns]
             lines.append("| " + " | ".join(row) + " |")
 
     section("patches", "patch", patches)
@@ -365,13 +388,15 @@ def render_markdown(columns, cell, patches, utils, contribs, descriptions) -> st
     return "\n".join(lines) + "\n"
 
 
-def render_html(columns, cell, patches, utils, contribs, descriptions) -> str:
+def render_html(columns, cell, patches, utils, contribs,
+                descriptions, with_descriptions: bool) -> str:
     # Group columns by version so the header has a tidy two-row span:
     #   row 1: 18 | 17 | 16 | 15 | 14   (each colspan = number of editions)
     #   row 2: be se se1c | be se se1c certified certified_2 | ...
     groups = [(v, list(g)) for v, g in groupby(columns, key=lambda c: c[0])]
-    # +2 fixed columns: Feature and Description.
-    total_cols = len(columns) + 2
+    # Fixed (rowspan-2) columns: Feature, optionally Description.
+    fixed_cols = 2 if with_descriptions else 1
+    total_cols = len(columns) + fixed_cols
 
     out: list[str] = []
     out.append('<table border="1" cellpadding="4" cellspacing="0">')
@@ -379,7 +404,8 @@ def render_html(columns, cell, patches, utils, contribs, descriptions) -> str:
 
     out.append("<tr>")
     out.append('<th rowspan="2">Feature</th>')
-    out.append('<th rowspan="2">Description</th>')
+    if with_descriptions:
+        out.append('<th rowspan="2">Description</th>')
     for v, group in groups:
         out.append(f'<th colspan="{len(group)}">{escape(v)}</th>')
     out.append("</tr>")
@@ -398,10 +424,11 @@ def render_html(columns, cell, patches, utils, contribs, descriptions) -> str:
             f'style="text-align:left;background:#f0f0f0">{escape(title)}</th></tr>'
         )
         for name in names:
-            desc = _describe(descriptions, kind, name)
             out.append("<tr>")
             out.append(f"<td>{escape(name)}</td>")
-            out.append(f"<td>{_md_to_html(desc)}</td>")
+            if with_descriptions:
+                desc = _describe(descriptions, kind, name)
+                out.append(f"<td>{_md_to_html(desc)}</td>")
             for col in columns:
                 m = _mark(cell[col], kind, name)
                 out.append(f'<td style="text-align:center">{escape(m)}</td>')
@@ -459,6 +486,12 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
 
+    add_descriptions = prompt_add_descriptions()
+    print(
+        f"столбец Description: {'включён' if add_descriptions else 'отключён'}",
+        file=sys.stderr,
+    )
+
     try:
         loaded = load_and_validate(config)
     except ConfigError as e:
@@ -471,14 +504,19 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     columns, cell, patches, utils, contribs = collect(config, loaded)
-    descriptions = load_descriptions(args.descriptions)
+    # Load descriptions only if the column is actually going to be rendered
+    # — saves a file read and avoids a misleading "file not found" warning
+    # when the user explicitly opted out of the Description column.
+    descriptions = load_descriptions(args.descriptions) if add_descriptions else {}
 
     args.md_out.write_text(
-        render_markdown(columns, cell, patches, utils, contribs, descriptions),
+        render_markdown(columns, cell, patches, utils, contribs,
+                        descriptions, add_descriptions),
         encoding="utf-8",
     )
     args.html_out.write_text(
-        render_html(columns, cell, patches, utils, contribs, descriptions),
+        render_html(columns, cell, patches, utils, contribs,
+                    descriptions, add_descriptions),
         encoding="utf-8",
     )
 
