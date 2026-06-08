@@ -228,20 +228,51 @@ def collect_cell_tech(config: dict,
     return cell_tech
 
 
+def _pg_sort_key(k: str) -> int:
+    """Sort `pg-<N>` keys by descending major version. Non-numeric tail → 0."""
+    tail = k.split("-", 1)[1] if "-" in k else ""
+    try:
+        return -int(tail)
+    except ValueError:
+        return 0
+
+
 def build_output(config: dict,
                  loaded: dict[str, tuple[dict, dict]],
                  descriptions: dict) -> dict:
     """Assemble the Example.json-shaped output: versions, editions, groups[*]
-    with computed `matrix` per feature."""
+    with `matrix` per feature.
+
+    Per-feature `matrix` is composed of two layers:
+      1) computed `"<version>-<edition_long_name>"` keys based on
+         (version, edition) cells from conf.json/contrib.json;
+      2) any extra keys preserved from descriptions.json's existing
+         `matrix` (notably `"pg-NN"` flags marking that the feature is
+         already in upstream PostgreSQL NN). Such keys are never
+         overwritten or dropped — the script only reshapes (1).
+
+    Computed keys come first (config order: newest version → oldest,
+    editions in their order under the version). Preserved keys come
+    after: `pg-*` sorted by descending version, then anything else in
+    its original order.
+    """
     cell_tech = collect_cell_tech(config, loaded)
     display: dict[str, str] = config.get("edition_display_names") or {}
 
     versions = list(config["versions"].keys())
+    known_versions = set(versions)
 
     editions_out: "OrderedDict[str, list[str]]" = OrderedDict()
     for v in versions:
         vcfg = config["versions"][v]
         editions_out[v] = [display.get(ed, ed) for ed in vcfg["editions"]]
+
+    def _is_recomputed_key(k: str) -> bool:
+        """`<known_version>-<anything>` — то, что мы пересчитываем сами."""
+        if not isinstance(k, str) or "-" not in k:
+            return False
+        ver, _, rest = k.partition("-")
+        return ver in known_versions and bool(rest)
 
     groups_out: list[OrderedDict] = []
     for g in descriptions.get("groups", []) or []:
@@ -250,12 +281,32 @@ def build_output(config: dict,
         features_out: list[OrderedDict] = []
         for f in g.get("features", []) or []:
             tech = f.get("tech", "") or ""
-            matrix: "OrderedDict[str, bool]" = OrderedDict()
+
+            # 1. Compute fresh (version, edition) keys.
+            computed: "OrderedDict[str, bool]" = OrderedDict()
             for v in versions:
                 for ed_short in config["versions"][v]["editions"]:
                     if tech and tech in cell_tech.get((v, ed_short), set()):
                         long_name = display.get(ed_short, ed_short)
-                        matrix[f"{v}-{long_name}"] = True
+                        computed[f"{v}-{long_name}"] = True
+
+            # 2. Carry forward anything else the source matrix has.
+            source_matrix = f.get("matrix") or {}
+            preserved_items = [
+                (k, v) for k, v in source_matrix.items()
+                if not _is_recomputed_key(k)
+            ]
+            pg_items = sorted(
+                (kv for kv in preserved_items if kv[0].startswith("pg-")),
+                key=lambda kv: _pg_sort_key(kv[0]),
+            )
+            other_items = [kv for kv in preserved_items if not kv[0].startswith("pg-")]
+
+            matrix: "OrderedDict[str, bool]" = OrderedDict()
+            matrix.update(computed)
+            matrix.update(pg_items)
+            matrix.update(other_items)
+
             nf: OrderedDict = OrderedDict()
             nf["name"] = f["name"]
             nf["tech"] = tech

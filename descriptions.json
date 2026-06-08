@@ -7,103 +7,135 @@
           "name": "64-битный счетчик транзакций (XID)",
           "tech": "func/xid64",
           "description": "[64-битный](https://docs.tantorlabs.ru/tdb/ru/latest/se/forced-shrinking.html) счетчик транзакций\nЛогическая репликация между кластерами СУБД с 32-битным и 64-битным идентификатором транзакций",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/forced-shrinking.html"
         },
         {
           "name": "Улучшения SIMD-инструкций",
           "tech": "perf/simd",
-          "description": "Улучшения SIMD-инструкций для архитектур x86 (SSE2) и ARM (NEON) для улучшения обработки транзакций. Способствуют более быстрым операциям с jsontext, тем самым повышая общую эффективность обработки потоков данных"
+          "description": "Улучшения SIMD-инструкций для архитектур x86 (SSE2) и ARM (NEON) для улучшения обработки транзакций. Способствуют более быстрым операциям с jsontext, тем самым повышая общую эффективность обработки потоков данных",
+          "matrix": {
+            "pg-18": true,
+            "pg-17": true,
+            "pg-16": true
+          }
         },
         {
           "name": "Расширено использование SIMD-инструкций",
           "tech": "perf/simd-backport-from-18",
-          "description": "Улучшения, запланированные для PostgreSQL 18, уже доступны в 17-й версии"
+          "description": "Улучшения, запланированные для PostgreSQL 18, уже доступны в 17-й версии",
+          "matrix": {
+            "pg-18": true
+          }
         },
         {
           "name": "Оптимизация SLRU-кэша",
           "tech": "perf/slru",
-          "description": "Повышена производительность системы управления базами данных (СУБД) при большом количестве одновременных пользователей"
+          "description": "Повышена производительность системы управления базами данных (СУБД) при большом количестве одновременных пользователей",
+          "matrix": {
+            "pg-18": true,
+            "pg-17": true
+          }
         },
         {
           "name": "Оптимизация алгоритма сжатия `pglz`",
           "tech": "perf/pglz",
-          "description": "Оптимизированный алгоритм сжатия данных `pglz` (~1,4 раза)"
+          "description": "Оптимизированный алгоритм сжатия данных `pglz` (~1,4 раза)",
+          "matrix": {}
         },
         {
           "name": "Сжатие в `libpq`",
           "tech": "perf/libpq-compression",
           "description": "Сжатие трафика данных с использованием `libpq`",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/protocol-overview.html"
         },
         {
           "name": "Оптимизация для архитектуры ARM64",
           "tech": "perf/arm_cas",
-          "description": "Оптимизация для линейного поиска при использовании процессоров архитектуры ARM 64"
+          "description": "Оптимизация для линейного поиска при использовании процессоров архитектуры ARM 64",
+          "matrix": {}
         },
         {
           "name": "Повышенная информативность диагностики",
           "tech": "func/backtrace",
-          "description": "Повышенная информативность диагностической информации:\n• Диагностика внутренних ошибок СУБД (параметр `backtrace_on_internal_error`)\n• Информативность журналов сервера СУБД — стартовые сообщения содержат дополнительную диагностическую информацию\n• Приложение сервера [pg_controldata](https://docs.tantorlabs.ru/tdb/ru/latest/se/app-pgcontroldata.html) содержит дополнительную метаинформацию о редакции и сборке для упрощения диагностики возможных неполадок"
+          "description": "Повышенная информативность диагностической информации:\n• Диагностика внутренних ошибок СУБД (параметр `backtrace_on_internal_error`)\n• Информативность журналов сервера СУБД — стартовые сообщения содержат дополнительную диагностическую информацию\n• Приложение сервера [pg_controldata](https://docs.tantorlabs.ru/tdb/ru/latest/se/app-pgcontroldata.html) содержит дополнительную метаинформацию о редакции и сборке для упрощения диагностики возможных неполадок",
+          "matrix": {}
         },
         {
           "name": "Оптимизация восстановления на standby",
           "tech": "perf/standby-fadvise",
-          "description": "Оптимизированный процесс восстановления репликации (`fadvise` на резервном сервере)"
+          "description": "Оптимизированный процесс восстановления репликации (`fadvise` на резервном сервере)",
+          "matrix": {}
         },
         {
           "name": "Параллельная вставка данных",
           "tech": "perf/insert_parallel/common",
-          "description": "Расширенная поддержка параллельного выполнения запросов с помощью параметра [enable_parallel_insert](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-PARALLEL-INSERT)"
+          "description": "Расширенная поддержка параллельного выполнения запросов с помощью параметра [enable_parallel_insert](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-PARALLEL-INSERT)",
+          "matrix": {}
         },
         {
           "name": "Оптимизация буферов общей памяти",
           "tech": "perf/buf_part",
-          "description": "Увеличенное количество секций в общих буферах"
+          "description": "Увеличенное количество секций в общих буферах",
+          "matrix": {}
         },
         {
           "name": "Ускорение запросов `IN VALUES`",
           "tech": "perf/in_values_array",
-          "description": "Ускоренное выполнение запросов с использованием конструкции `IN VALUES`"
+          "description": "Ускоренное выполнение запросов с использованием конструкции `IN VALUES`",
+          "matrix": {
+            "pg-18": true,
+            "pg-17": true
+          }
         },
         {
           "name": "Оптимизация OR-подзапросов",
           "tech": "perf/or_expansion",
-          "description": "Оптимизация для запросов с дизъюнкцией подзапросов (конструкции типа `WHERE EXISTS(...) OR EXISTS(...)`) с помощью параметров [enable_or_expansion](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-OR-EXPANSION) и [or_expanded_other_disjuncts_cost_limit](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-OR-EXPANDED-OTHER-DISJUNCTS-COST-LIMIT)"
+          "description": "Оптимизация для запросов с дизъюнкцией подзапросов (конструкции типа `WHERE EXISTS(...) OR EXISTS(...)`) с помощью параметров [enable_or_expansion](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-OR-EXPANSION) и [or_expanded_other_disjuncts_cost_limit](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-OR-EXPANDED-OTHER-DISJUNCTS-COST-LIMIT)",
+          "matrix": {}
         },
         {
           "name": "Управление статистикой по временным таблицам",
           "tech": "perf/dst_temp_tables",
-          "description": "Параметр [default_statistics_target_temp_tables](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-DEFAULT-STATISTICS-TARGET-TEMP) позволяет управлять точностью статистики временных таблиц, что в сочетании с [default_statistics_target](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-DEFAULT-STATISTICS-TARGET) обеспечивает независимую настройку детализации статистики для постоянных и временных таблиц"
+          "description": "Параметр [default_statistics_target_temp_tables](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-DEFAULT-STATISTICS-TARGET-TEMP) позволяет управлять точностью статистики временных таблиц, что в сочетании с [default_statistics_target](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-DEFAULT-STATISTICS-TARGET) обеспечивает независимую настройку детализации статистики для постоянных и временных таблиц",
+          "matrix": {}
         },
         {
           "name": "Оптимизация применения фильтров",
           "tech": "perf/enable_filter_predicates_reordering/common",
-          "description": "Параметр [enable_filter_predicates_reordering](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-FILTER-PREDICATES-REORDERING), который позволяет ускорять выполнение запросов с различными типами сканирования за счет оптимизации порядка применения фильтров: наиболее селективные условия проверяются первыми"
+          "description": "Параметр [enable_filter_predicates_reordering](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-FILTER-PREDICATES-REORDERING), который позволяет ускорять выполнение запросов с различными типами сканирования за счет оптимизации порядка применения фильтров: наиболее селективные условия проверяются первыми",
+          "matrix": {}
         },
         {
           "name": "Отключение JIT по умолчанию",
           "tech": "func/jit",
-          "description": "Значение параметра [jit](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-JIT) по умолчанию изменено на `off`. Это повышает производительность"
+          "description": "Значение параметра [jit](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-JIT) по умолчанию изменено на `off`. Это повышает производительность",
+          "matrix": {}
         },
         {
           "name": "Поддержка ячеек до 2 ГБ в pg_dump",
           "tech": "func/large_alloc",
-          "description": "Максимальный размер данных в ячейках таблицы, поддерживаемый модулем [pg_dump](https://docs.tantorlabs.ru/tdb/ru/latest/se/app-pgdump.html), составляет 2 ГБ"
+          "description": "Максимальный размер данных в ячейках таблицы, поддерживаемый модулем [pg_dump](https://docs.tantorlabs.ru/tdb/ru/latest/se/app-pgdump.html), составляет 2 ГБ",
+          "matrix": {}
         },
         {
           "name": "Детальная оценка стоимости сортировки",
           "tech": "perf/1c_groupby_alternative_paths/fix",
-          "description": "Детальное вычисление оценки стоимости планировщика для операций сортировки с помощью настройки [enable_detailed_sort_cost](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-DETAILED-SORT-COST)"
+          "description": "Детальное вычисление оценки стоимости планировщика для операций сортировки с помощью настройки [enable_detailed_sort_cost](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-DETAILED-SORT-COST)",
+          "matrix": {}
         },
         {
           "name": "Снижение блокировок в общих буферах",
           "tech": "perf/buffers",
-          "description": "Уменьшенное количество блокировок страниц данных в общих буферах"
+          "description": "Уменьшенное количество блокировок страниц данных в общих буферах",
+          "matrix": {}
         },
         {
           "name": "Отключение статистики временных таблиц",
           "tech": "perf/enable_pgstat_for_temp_rel",
-          "description": "Параметр [enable_pgstat_for_temp_rel](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-statistics.html#GUC-ENABLE-PGSTAT-FOR-TEMP-REL), который позволяет отключать сбор статистики по временным таблицам в глобальную хэш-таблицу `pg_stat`"
+          "description": "Параметр [enable_pgstat_for_temp_rel](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-statistics.html#GUC-ENABLE-PGSTAT-FOR-TEMP-REL), который позволяет отключать сбор статистики по временным таблицам в глобальную хэш-таблицу `pg_stat`",
+          "matrix": {}
         }
       ]
     },
@@ -114,102 +146,131 @@
           "name": "Автономные транзакции",
           "tech": "func/autonomous_tx",
           "description": "Автономные транзакции в `PL/pgSQL` позволяют выполнять SQL-запросы внутри функции в отдельной транзакции с полной изоляцией",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/autonomous-transactions.html"
         },
         {
           "name": "Инкрементальные материализованные представления",
           "tech": "pg_ivm",
           "description": "Расширение предоставляет функцию инкрементного обслуживания представлений (IVM)",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_ivm.html"
         },
         {
           "name": "Векторный поиск (Generative AI)",
           "tech": "vector",
           "description": "Расширение позволяет находить сходства векторов",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/vector.html"
         },
         {
           "name": "Колоночное хранение данных Hydra Columnar",
           "tech": "hydra",
           "description": "Форк Citus Columnar, развивающий его функциональность. Расширение обеспечивает колоночный метод хранения данных с поддержкой сжатия и оптимизацией аналитических запросов, а также улучшенной обработкой операций изменения данных (`UPDATE`, `DELETE`) по сравнению с традиционными append-only колоночными решениями",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/hydra.html"
         },
         {
           "name": "Колоночное хранение данных Citus Columnar",
           "tech": "citus",
           "description": "Расширение обеспечивает колоночный метод хранения данных с возможностью сжатия для уменьшения объёма ввода-вывода и обеспечения высокой производительности. Применимо только для добавления (append-only), например, для временных рядов данных и витрин корпоративных хранилищ",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/hydra.html"
         },
         {
           "name": "Фоновая архивация данных",
           "tech": "pg_archive",
           "description": "Расширение позволяет автоматически архивировать исторические данные из секционированных таблиц",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_archive.html"
         },
         {
           "name": "Тайм-аут транзакции",
           "tech": "func/transaction_timeout",
-          "description": "Возможность завершения транзакции на основе [предустановленного тайм-аута](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-client.html#GUC-TRANSACTION-TIMEOUT)"
+          "description": "Возможность завершения транзакции на основе [предустановленного тайм-аута](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-client.html#GUC-TRANSACTION-TIMEOUT)",
+          "matrix": {
+            "pg-18": true,
+            "pg-17": true
+          }
         },
         {
           "name": "Commit Sequence Number (CSN)",
           "tech": "func/csn",
           "description": "Возможность использования номера последовательности фиксации (Commit Sequence Number, CSN — монотонно возрастающего 64-битного числа, присваиваемого каждой транзакции в момент её фиксации) для оптимизации определения видимости строк в снимках транзакций",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/csn.html"
         },
         {
           "name": "Двунаправленная логическая репликация",
           "tech": "func/repl_origin",
-          "description": "Возможность подписчикам логической репликации обрабатывать только те изменения, которые не имеют источника  ([двунаправленная логическая репликация](https://docs.tantorlabs.ru/tdb/ru/latest/se/sql-createsubscription.html))"
+          "description": "Возможность подписчикам логической репликации обрабатывать только те изменения, которые не имеют источника  ([двунаправленная логическая репликация](https://docs.tantorlabs.ru/tdb/ru/latest/se/sql-createsubscription.html))",
+          "matrix": {
+            "pg-18": true,
+            "pg-17": true,
+            "pg-16": true
+          }
         },
         {
           "name": "Параллельное сканирование временных таблиц",
           "tech": "func/parallel_temp_tables",
-          "description": "Возможность сканирования временных таблиц в параллельном режиме с использованием параметров [extended_parallel_processing](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-EXTENDED-PARALLEL-PROCESSING) и [write_page_cost](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-WRITE-PAGE-COST)"
+          "description": "Возможность сканирования временных таблиц в параллельном режиме с использованием параметров [extended_parallel_processing](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-EXTENDED-PARALLEL-PROCESSING) и [write_page_cost](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-WRITE-PAGE-COST)",
+          "matrix": {}
         },
         {
           "name": "Зарезервированные соединения",
           "tech": "func/reserved_connections",
-          "description": "Возможность добавления новых [зарезервированных соединений](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-connection.html#GUC-RESERVED-CONNECTIONS), количество которых заранее определено в параметре reserved_connections в файле конфигурации. Это позволяет резервировать слоты соединения для пользователей, не являющихся суперпользователями. Слоты, зарезервированные через этот параметр, доступны только пользователям, которые могут иметь новую предопределенную роль `pg_use_reserved_connections`"
+          "description": "Возможность добавления новых [зарезервированных соединений](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-connection.html#GUC-RESERVED-CONNECTIONS), количество которых заранее определено в параметре reserved_connections в файле конфигурации. Это позволяет резервировать слоты соединения для пользователей, не являющихся суперпользователями. Слоты, зарезервированные через этот параметр, доступны только пользователям, которые могут иметь новую предопределенную роль `pg_use_reserved_connections`",
+          "matrix": {
+            "pg-18": true,
+            "pg-17": true,
+            "pg-16": true
+          }
         },
         {
           "name": "Планировщик заданий",
           "tech": "pg_cron",
           "description": "Расширение-планировщик заданий на основе cron, работающий внутри базы данных как расширение. Он использует тот же синтаксис, что и обычный cron, и позволяет планировать выполнение команд непосредственно из базы данных",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_cron.html"
         },
         {
           "name": "Работа с временными таблицами на реплике",
           "tech": "func/replica_temp_tables",
-          "description": "Возможность работы с временными таблицами на физической реплике"
+          "description": "Возможность работы с временными таблицами на физической реплике",
+          "matrix": {}
         },
         {
           "name": "Eager Aggregation",
           "tech": "func/eager-aggregation",
-          "description": "Возможность частичного выполнения агрегации до соединений таблиц с последующей финализацией после завершения соединения с помощью параметра [enable_eager_aggregate](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-EAGER-AGGREGATE). Это позволяет сократить объем обрабатываемых данных и выбрать более эффективный план выполнения"
+          "description": "Возможность частичного выполнения агрегации до соединений таблиц с последующей финализацией после завершения соединения с помощью параметра [enable_eager_aggregate](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-EAGER-AGGREGATE). Это позволяет сократить объем обрабатываемых данных и выбрать более эффективный план выполнения",
+          "matrix": {}
         },
         {
           "name": "Управление жизненным циклом данных",
           "tech": "pg_ilm",
           "description": "Расширение управления жизненным циклом данных, предназначенное для вычисления рекомендаций по архивированию для обычных таблиц и партиций (leaf partitions)",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_ilm.html"
         },
         {
           "name": "Сжатие страниц Compression Storage Manager (CSM)",
           "tech": "func/smgr",
           "description": "Возможность сжатия Compression Storage Manager (CSM) страниц базы данных на уровне менеджера хранения",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/csm.html"
         },
         {
           "name": "Расширение CSN",
           "tech": "csn",
           "description": "Расширение предоставляет функции для получения [номера последовательности фиксации (Commit Sequence Number)](https://docs.tantorlabs.ru/tdb/ru/latest/se/commit-sequence-numbers.html), связанного с транзакциями и снимками",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/csn.html"
         },
         {
           "name": "Фоновое выполнение команд",
           "tech": "pg_background",
           "description": "Расширение позволяет выполнять команды в фоновом режиме, такие как `VACUUM` и `CREATE INDEX CONCURRENTLY`, из SQL, а также запускать автономные транзакции",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_background.html"
         }
       ]
@@ -221,94 +282,110 @@
           "name": "Профилирование событий ожидания",
           "tech": "pg_wait_sampling",
           "description": "Расширение предоставляет информацию о текущем событии ожидания конкретного процесса. Однако для того, чтобы собрать описательную статистику поведения сервера, пользователь должен многократно отбирать текущее событие ожидания. Это расширение для сбора выборочной статистики событий ожидания, которое предотвращает избыточное семплирование ожидания текущего события",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_wait_sampling.html"
         },
         {
           "name": "Статистика предикатов `WHERE`/`JOIN`",
           "tech": "pg_qualstats",
           "description": "Расширение сохраняет статистические данные по найденным предикатам в операторах `WHERE` и предложениях `JOIN`. Это позволит проанализировать наиболее часто выполняемые квалификаторы (предикаты) в вашей базе данных, а также идентифицировать коррелированные столбцы, определяя, какие столбцы чаще всего запрашиваются вместе",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_qualstats.html"
         },
         {
           "name": "Прецизионный сбор статистики",
           "tech": "perf/statistics_sample_multiplier",
-          "description": "Прецизионный сбор статистики. Позволяет осуществлять детальный контроль за выборкой статистики для отдельных столбцов таблицы с помощью команды `ALTER TABLE ... ALTER COLUMN ... SET STAT MULTIPLIER`"
+          "description": "Прецизионный сбор статистики. Позволяет осуществлять детальный контроль за выборкой статистики для отдельных столбцов таблицы с помощью команды `ALTER TABLE ... ALTER COLUMN ... SET STAT MULTIPLIER`",
+          "matrix": {}
         },
         {
           "name": "Автоматический анализ планов запросов",
           "tech": "pg_stat_advisor",
           "description": "Расширение позволяет анализировать производительность запросов и создавать дополнительные статистики для улучшения плана запроса",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_stat_advisor.html"
         },
         {
           "name": "Ограничение скорости выполнения запросов",
           "tech": "pg_throttle",
           "description": "Расширение позволяет ограничивать скорость выполнения запросов",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_throttle.html"
         },
         {
           "name": "Статистика планов выполнения",
           "tech": "pg_store_plans",
           "description": "Расширение предоставляет средства для отслеживания статистики плана выполнения для всех операторов SQL, выполняемых сервером СУБД",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_store_plans.html"
         },
         {
           "name": "Гипотетические индексы",
           "tech": "hypopg",
           "description": "Расширение добавляет поддержку гипотетических индексов. Гипотетический, или виртуальный индекс — это индекс, который в действительности не существует, и поэтому его создание не требует ресурсов ЦП, диска или каких-либо ресурсов. Они полезны, чтобы знать, могут ли определенные индексы повысить производительность для проблемных запросов. Дает возможность узнать, будет ли СУБД использовать эти индексы или нет, не тратя ресурсы на их создание",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/hypopg.html"
         },
         {
           "name": "Анализ производительности на уровне ФС",
           "tech": "pg_stat_kcache",
           "description": "Расширение собирает статистику о реальных операциях чтения и записи, выполняемых на уровне файловой системы",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_stat_kcache.html"
         },
         {
           "name": "Настройка расширений диагностики",
           "tech": "pg_diag_setup",
           "description": "Утилита автоматизирует настройку расширений диагностики производительности СУБД, таких как `pg_store_plans`, `pg_stat_statements`, `pg_stat_kcache`, `auto_explain`, `pg_buffercache` и других. Это упрощает интеграцию систем мониторинга баз данных",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_diag_setup.html"
         },
         {
           "name": "Дефрагментация таблиц и индексов онлайн",
           "tech": "pg_repack",
           "description": "Расширение позволяет удалять раздувание таблиц и индексов (BLOAT) и, при необходимости, восстанавливать физический порядок кластеризованных индексов. В отличие от `CLUSTER` и `VACUUM FULL`, он работает онлайн, не удерживая эксклюзивную блокировку обрабатываемых таблиц во время обработки",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_repack.html"
         },
         {
           "name": "HTTP-очередь событий",
           "tech": "pgq",
           "description": "Расширение предоставляет универсальную высокопроизводительную не заблокированную очередь с простым API, основанным на функциях SQL",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pgq.html"
         },
         {
           "name": "Оценка сжимаемости данных",
           "tech": "pg_csm",
           "description": "Расширение предоставляет диагностическую оценку сжимаемости таблиц и индексов, использующих [Compression Storage Manager](https://docs.tantorlabs.ru/tdb/ru/latest/se/csm.html)",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_csm.html"
         },
         {
           "name": "Управление идентификаторами запросов",
           "tech": "pg_query_id",
           "description": "Расширение позволяет управлять аспектами вычисления идентификатора запроса",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_query_id.html"
         },
         {
           "name": "Сэмплирование в pg_stat_statements",
           "tech": "perf/pgss_sampling",
-          "description": "Поддержка сэмплирования в [pg_stat_statements](https://docs.tantorlabs.ru/tdb/ru/latest/se/pgstatstatements.html): выборка снижает издержки на мониторинг при высокой загрузке, что полностью исключает негативное влияние на общую производительность системы"
+          "description": "Поддержка сэмплирования в [pg_stat_statements](https://docs.tantorlabs.ru/tdb/ru/latest/se/pgstatstatements.html): выборка снижает издержки на мониторинг при высокой загрузке, что полностью исключает негативное влияние на общую производительность системы",
+          "matrix": {}
         },
         {
           "name": "Дефрагментация таблиц и индексов",
           "tech": "pgcompacttable",
           "description": "Утилита уменьшает размер раздутых таблиц и индексов без использования тяжелых блокировок. Он разработан для реорганизации данных в таблицах и перестроения индексов с целью освобождения дискового пространства без влияния на производительность базы данных",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pgcompacttable.html"
         },
         {
           "name": "Профилирование на основе выборки",
           "tech": "pg_sample_profile",
           "description": "Расширение обеспечивает профилирование активности базы данных на основе выборки",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_sample_profile.html"
         }
       ]
@@ -320,46 +397,54 @@
           "name": "Резервное копирование и миграция",
           "tech": "pgcopydb",
           "description": "Утилита автоматизирует выполнение `pg_dump` и `pg_restore` между двумя работающими серверами Postgres. Чтобы как можно быстрее скопировать базу данных на другой сервер, желательно использовать параллельные опции `pg_dump` и при этом иметь возможность передавать данные в несколько задач `pg_restore`",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pgcopydb.html"
         },
         {
           "name": "Восстановление повреждённых страниц",
           "tech": "page_repair",
           "description": "Расширение предназначен для восстановления отдельных поврежденных страниц с использованием резервных данных с сервера репликации. Он позволяет сэкономить время на операции восстановления, так как не требует восстановления всех данных, а только отдельных страниц",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/page_repair.html"
         },
         {
           "name": "Контроль целостности WAL",
           "tech": "func/wal_check_crc",
-          "description": "Проверка [контрольной суммы](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-wal.html#GUC-WAL-SENDER-STOP-WHEN-CRC-FAILED) блоков данных при отправке WAL на резервный сервер"
+          "description": "Проверка [контрольной суммы](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-wal.html#GUC-WAL-SENDER-STOP-WHEN-CRC-FAILED) блоков данных при отправке WAL на резервный сервер",
+          "matrix": {}
         },
         {
           "name": "Декодирование для репликации",
           "tech": "dbcopies_decoding",
           "description": "Расширение поддерживает механизм копирования базы данных и ускоритель данных",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/dbcopies_decoding.html"
         },
         {
           "name": "Генерация тестовых данных",
           "tech": "data_generator",
           "description": "Утилита генерирует фейковые данные для тестирования и разработки. Поддерживает различные типы данных и позволяет настраивать генерируемые данные с помощью шаблонов",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/data_generator.html"
         },
         {
           "name": "Управление моментом старта потоковой репликации",
           "tech": "func/recovery_min_apply_delay",
-          "description": "Возможность изменения момента начала потоковой репликации с помощью параметра [wal_receiver_start_at](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-replication.html#GUC-WAL-RECEIVER-START-CONDITION)"
+          "description": "Возможность изменения момента начала потоковой репликации с помощью параметра [wal_receiver_start_at](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-replication.html#GUC-WAL-RECEIVER-START-CONDITION)",
+          "matrix": {}
         },
         {
           "name": "Миграция Citus Columnar → Hydra Columnar",
           "tech": "columnar_migrator",
           "description": "Утилита переносит данные из расширения Citus Columnar в расширение [Hydra Columnar](https://docs.tantorlabs.ru/tdb/ru/latest/se/hydra.html)",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/columnar_migrator.html"
         },
         {
           "name": "Переименование SLRU-параметров после обновления",
           "tech": "slru_upgrader",
           "description": "Утилита автоматически переименовывает параметры конфигурации, связанные с SLRU-буферами, при обновлении с 15-й версии Tantor. Эта утилита помогает избежать проблемы, когда сервер не может запуститься после обновления из-за наличия старых имён параметров в файле `postgresql.conf`",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/slru_upgrader.html"
         }
       ]
@@ -371,58 +456,72 @@
           "name": "Прозрачное шифрование данных",
           "tech": "pg_tde",
           "description": "Расширение реализует прозрачное шифрование данных (TDE) на уровне хранения. Оно не шифрует данные в памяти или при передаче по сети",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_tde.html"
         },
         {
           "name": "Анонимизация и маскирование данных",
           "tech": "transp_anon",
           "description": "Расширение для маскировки или замены персонально идентифицируемой информации или коммерчески чувствительных данных из базы данных",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/transp_anon.html"
         },
         {
           "name": "Проверка учётных данных",
           "tech": "credcheck",
           "description": "Расширение обеспечивает проверку учетных данных, во время создания пользователя, смены пароля и переименования пользователя. Используя это расширение, можно определить набор правил для разрешения определенного набора учетных данных и набор правил для отклонения определенного типа учетных данных. Расширение разработано на основе хука `check_password_hook` в PostgreSQL",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/credcheck.html"
         },
         {
           "name": "Расширенный аудит",
           "tech": "pgaudit",
           "description": "Расширение предоставляет детализированное ведение журнала аудита сеансов и/или объектов через стандартное средство ведения журнала СУБД. Цель pgAudit — предоставить пользователям СУБД возможность создавать журналы аудита, которые часто требуются для соблюдения государственных, финансовых или ISO сертификаций",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pgaudit.html"
         },
         {
           "name": "Аутентификация OAuth 2.0",
           "tech": "func/oauth",
-          "description": "Поддержка аутентификации OAuth 2.0. Для получения дополнительной информации смотрите [Поддержка OAuth](https://docs.tantorlabs.ru/tdb/ru/latest/se/libpq-oauth.html), [Модули валидаторов OAuth](https://docs.tantorlabs.ru/tdb/ru/latest/se/oauth-validators.html) и [Базовый валидатор OAuth](https://docs.tantorlabs.ru/tdb/ru/latest/se/oauth-validator.html)"
+          "description": "Поддержка аутентификации OAuth 2.0. Для получения дополнительной информации смотрите [Поддержка OAuth](https://docs.tantorlabs.ru/tdb/ru/latest/se/libpq-oauth.html), [Модули валидаторов OAuth](https://docs.tantorlabs.ru/tdb/ru/latest/se/oauth-validators.html) и [Базовый валидатор OAuth](https://docs.tantorlabs.ru/tdb/ru/latest/se/oauth-validator.html)",
+          "matrix": {
+            "pg-18": true
+          }
         },
         {
           "name": "Аудит безопасности",
           "tech": "pg_sec_check",
           "description": "Утилита проводит аудит безопасности конфигураций базы данных. Он автоматизирует проверку различных аспектов безопасности: от настроек сервера до параметров, специфичных для базы данных, и предоставляет подробные отчеты об обнаруженных проблемах вместе с практическими рекомендациями по их устранению",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_sec_check.html"
         },
         {
           "name": "Проверка целостности объектов БД",
           "tech": "pg_integrity_verifier",
           "description": "Утилита проверяет целостность объектов базы данных и обнаруживает несоответствия в данных и метаданных",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/certified/pg_integrity_verifier.html"
         },
         {
           "name": "Безопасное удаление файлов",
           "tech": "func/unlink_wipe_level",
-          "description": "Настройка уровня очистки содержимого файлов таблиц перед удалением с помощью параметра [unlink_wipe_level](https://docs.tantorlabs.ru/tdb/ru/latest/certified/runtime-config-file-locations.html#GUC-UNLINK-WIPE-LEVEL)"
+          "description": "Настройка уровня очистки содержимого файлов таблиц перед удалением с помощью параметра [unlink_wipe_level](https://docs.tantorlabs.ru/tdb/ru/latest/certified/runtime-config-file-locations.html#GUC-UNLINK-WIPE-LEVEL)",
+          "matrix": {}
         },
         {
           "name": "Базовый валидатор OAuth 2.0",
           "tech": "oauth_base_validator",
           "description": "Расширение реализует простой валидатор токенов OAuth 2.0 для встроенной поддержки потока авторизации устройства",
+          "matrix": {
+            "pg-18": true
+          },
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/oauth-validator.html"
         },
         {
           "name": "Логирование аудита в отдельный файл",
           "tech": "pgauditlogtofile",
           "description": "Расширение дополнение к pgAudit, которое перенаправляет строки аудита в отдельный файл, вместо использования диспетчера журналирования сервера PostgreSQL. В итоге мы получаем файл аудита, который можно легко ротировать, не загрязняя журналы сервера этими сообщениями. Журналы аудита в системах с высокой нагрузкой могут очень быстро расти. Это расширение позволяет автоматически ротировать файлы на основе заданного количества минут",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pgauditlogtofile.html"
         }
       ]
@@ -434,48 +533,58 @@
           "name": "Совместимость с Oracle",
           "tech": "orafce",
           "description": "Расширение представляет собой набор функций, обеспечивающих совместимость с базами данных Oracle. Эти функции позволяют упростить миграцию на Tantor и снизить затраты на перенастройку приложений",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/orafce.html"
         },
         {
           "name": "Сессионные переменные",
           "tech": "pg_variables",
           "description": "Расширение предоставляет функции для работы с переменными различных типов в текущей сессии пользователя",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_variables.html"
         },
         {
           "name": "Хинты для планировщика",
           "tech": "pg_hint_plan",
           "description": "Расширение позволяет настраивать планы выполнения SQL-запросов с использованием так называемых \"подсказок\" в комментариях SQL. Это дает возможность компенсировать ошибки планировщика, возникающие в критических случаях",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_hint_plan.html"
         },
         {
           "name": "Управление партициями",
           "tech": "pg_partman",
           "description": "Расширение позволяет создавать и управлять секциями таблицы как на основе времени, так и на основе последовательностей",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_partman.html"
         },
         {
           "name": "Синхронизация DDL при логической репликации",
           "tech": "pgl_ddl_deploy",
           "description": "Расширение для отправки команд DDL на сервер-реплику во время логической репликации",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pgl_ddl_deploy.html"
         },
         {
           "name": "HTTP-запросы из SQL",
           "tech": "pgsql-http",
           "description": "Расширение дает возможность написать триггер, вызывающий веб-сервис, способный вернуть результат, либо заставить этот сервис обновляться в соответствии с новым состоянием базы данных",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pgsql-http.html"
         },
         {
           "name": "UUID v7",
           "tech": "pg_uuidv7",
           "description": "Расширение обеспечивает поддержку работы с типом данных UUIDv7",
+          "matrix": {
+            "pg-18": true
+          },
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/17_9/se/pg_uuidv7.html"
         },
         {
           "name": "Подсказки для планировщика",
           "tech": "plantuner",
           "description": "Расширение позволяет использовать подсказки для планировщика",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/plantuner.html"
         }
       ]
@@ -486,93 +595,112 @@
         {
           "name": "`EXISTS` → `LATERAL SEMI JOIN`",
           "tech": "perf/convert_exists_as_lateral_semijoin",
-          "description": "Настройка [enable_convert_exists_as_lateral_join](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-CONVERT-EXISTS-AS-LATERAL-JOIN), позволяющая планировщику преобразовывать подзапросы `EXISTS` в `LATERAL SEMI JOIN`, когда это возможно, для улучшения производительности"
+          "description": "Настройка [enable_convert_exists_as_lateral_join](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-CONVERT-EXISTS-AS-LATERAL-JOIN), позволяющая планировщику преобразовывать подзапросы `EXISTS` в `LATERAL SEMI JOIN`, когда это возможно, для улучшения производительности",
+          "matrix": {}
         },
         {
           "name": "Join Predicate Pushdown",
           "tech": "perf/join_pushdown",
-          "description": "Улучшенное поведение планировщика с использованием технологии [Join Predicate Pushdown](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-JOIN-PUSHDOWN)"
+          "description": "Улучшенное поведение планировщика с использованием технологии [Join Predicate Pushdown](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-JOIN-PUSHDOWN)",
+          "matrix": {}
         },
         {
           "name": "Покрывающие индексы с учётом селективности",
           "tech": "perf/compare_index_path_selectivity",
-          "description": "Улучшенное поведение планировщика за счет использования по умолчанию [покрывающих индексов с учетом их селективности](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-INDEX-PATH-SELECTIVITY)"
+          "description": "Улучшенное поведение планировщика за счет использования по умолчанию [покрывающих индексов с учетом их селективности](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html#GUC-ENABLE-INDEX-PATH-SELECTIVITY)",
+          "matrix": {}
         },
         {
           "name": "Оптимизация работы с временными таблицами",
           "tech": "func/inmem_catalog",
-          "description": "Улучшенная производительность операций, связанных с временными таблицами"
+          "description": "Улучшенная производительность операций, связанных с временными таблицами",
+          "matrix": {}
         },
         {
           "name": "Оптимизация запросов «Закрытие месяца» (1С:ERP)",
           "tech": "perf/1c_groupby_alternative_paths",
-          "description": "Оптимизированные запросы с группировками, характерные для операций 'Закрытие месяца' в 1C:ERP"
+          "description": "Оптимизированные запросы с группировками, характерные для операций 'Закрытие месяца' в 1C:ERP",
+          "matrix": {}
         },
         {
           "name": "Отложенное выделение места для временных таблиц",
           "tech": "perf/delayed_temp_file_creation",
-          "description": "Отложенное размещение временных таблиц с помощью настройки [enable_delayed_temp_file](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-resource.html#GUC-ENABLE-DELAYED-TEMP-FILE)"
+          "description": "Отложенное размещение временных таблиц с помощью настройки [enable_delayed_temp_file](https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-resource.html#GUC-ENABLE-DELAYED-TEMP-FILE)",
+          "matrix": {}
         },
         {
           "name": "Агрегация статистики `pg_stat_statements`",
           "tech": "func/query_masking",
-          "description": "Интеллектуальная агрегация данных в [pg_stat_statements](https://docs.tantorlabs.ru/tdb/ru/latest/se/pgstatstatements.html): система теперь маскирует имена временных таблиц и массивов, что позволяет более точно агрегировать статистику по однотипным запросам с разными параметрами"
+          "description": "Интеллектуальная агрегация данных в [pg_stat_statements](https://docs.tantorlabs.ru/tdb/ru/latest/se/pgstatstatements.html): система теперь маскирует имена временных таблиц и массивов, что позволяет более точно агрегировать статистику по однотипным запросам с разными параметрами",
+          "matrix": {}
         },
         {
           "name": "Расширение `mchar` для 1С",
           "tech": "mchar",
           "description": "Расширение для улучшения поддержки 1C: Предприятие, самой популярной российской CRM и ERP системы. Он реализует типы MCHAR и MVARCHAR, которые совместимы с MS SQL CHAR и VARCHAR соответственно. Кроме того, эти типы используют библиотеку ICU для сравнения и преобразования регистра, поэтому их поведение одинаково на разных операционных системах. Также включает расширение citext, которое предоставляет типы, аналогичные MCHAR. Однако это расширение не эмулирует поведение MS-SQL в отношении пробелов в конце значения",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/mchar.html"
         },
         {
           "name": "Быстрое усечение временных таблиц",
           "tech": "fasttrun",
           "description": "Расширение предоставляет небезопасную для транзакций функцию для усечения временных таблиц без увеличения размера pg_class. Этот модуль необходим для поддержки 1C Enterprise. Быстрая операция усечения не является транзакционной, поэтому ее результаты не могут быть отменены и сразу становятся видимыми во всех сессиях независимо от уровня изоляции",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/fasttrun.html"
         },
         {
           "name": "Автодамп проблемных запросов",
           "tech": "auto_dump",
           "description": "Расширение помогает создавать самодостаточную репродукцию проблемных запросов, которые выполняются в рабочей среде (например, из 1С)",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/auto_dump.html"
         },
         {
           "name": "Профилирование запросов 1С",
           "tech": "pg_trace",
           "description": "Расширение предоставляет возможность для глубокого анализа и профилирования SQL-запросов, особенно актуальное для пользователей платформы 1С",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/pg_trace.html"
         },
         {
           "name": "Сбор статистики после INSERT/UPDATE/DELETE",
           "tech": "online_analyze",
           "description": "Расширение выполняет активацию сбора статистики сразу после операций `INSERT/UPDATE/DELETE/SELECT INTO` для задействованных таблиц",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/online_analyze.html"
         },
         {
           "name": "Устранение избыточных `self-join`",
           "tech": "perf/remove_self_joins",
           "description": "Устранение ненужных соединений, когда таблица соединяется сама с собой",
+          "matrix": {
+            "pg-18": true
+          },
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/runtime-config-query.html"
         },
         {
           "name": "Ускорение проверки уникальности имён столбцов",
           "tech": "perf/1c_ruleutils_colname_hash",
-          "description": "Хеш-таблица для ускорения проверки уникальности имен столбцов во время обратного синтаксического анализа представления"
+          "description": "Хеш-таблица для ускорения проверки уникальности имен столбцов во время обратного синтаксического анализа представления",
+          "matrix": {}
         },
         {
           "name": "Пропуск избыточных блокировок временных таблиц",
           "tech": "perf/1c_skip_temptable_lock",
-          "description": "Возможность пропускать блокировки записей каталога для временных таблиц, когда они не требуются, снижая издержки при работе с такими объектами"
+          "description": "Возможность пропускать блокировки записей каталога для временных таблиц, когда они не требуются, снижая издержки при работе с такими объектами",
+          "matrix": {}
         },
         {
           "name": "Поддержка расширений и типов данных 1С",
           "tech": "func/1c",
-          "description": "Поддержка расширений и типов данных для совместимости с 1С.\nОптимизированная работа команды `ANALYZE` для широких таблиц"
+          "description": "Поддержка расширений и типов данных для совместимости с 1С.\nОптимизированная работа команды `ANALYZE` для широких таблиц",
+          "matrix": {}
         },
         {
           "name": "Расширение `fulleq` для 1С",
           "tech": "fulleq",
           "description": "Расширение предоставляет дополнительный оператор эквивалентности для совместимости с Microsoft SQL Server. Этот модуль необходим для поддержки 1C Enterprise",
+          "matrix": {},
           "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/fulleq.html"
         }
       ]
