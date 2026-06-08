@@ -4,6 +4,63 @@
 #   editions — список изданий, которые надо собирать в таблицу
 #   conf     — путь к conf.json данной версии
 #   contrib  — путь к contrib.json данной версии
+#
+# Таблица [edition_display_names] задаёт человекочитаемые имена изданий,
+# которые попадают в выходной Example.json (поле editions и ключи matrix).
+# Если ключа здесь нет, используется короткое имя как есть.
+# Используется compare_json.py; compare.py этот раздел игнорирует.
+
+[edition_display_names]
+be          = "Basic Edition"
+se          = "Special Edition"
+se1c        = "Special Edition 1C"
+certified   = "Certified исп. 1"
+certified_2 = "Certified исп. 2"
+free        = "Free Edition"
+
+# Алиасы tech-имён: ключ — имя из conf.json/contrib.json, значение —
+# каноническое имя, под которым фича лежит в descriptions.json.
+# Используется compare_json.py для двух целей:
+#   1) при сборке matrix считаем алиас и канон одной фичей;
+#   2) такой алиас не попадает в отчёт «patches missing from descriptions.json».
+[tech_aliases]
+"func/large_alloc_1c" = "func/large_alloc"
+"func/xid64mark1" = "func/xid64"
+"perf/slru_xid64" = "perf/slru"
+"func/eager-aggregation/1c" = "func/eager-aggregation"
+"func/inmem_catalog/common" = "func/inmem_catalog"
+"perf/1c_groupby_alternative_paths/fix/1c" = "perf/1c_groupby_alternative_paths/fix"
+"pg_wait_profile" = "pg_sample_profile"
+"perf/1c_remove_self_joins" = "perf/remove_self_joins"
+
+# Служебные tech-имена, которые НЕ соответствуют пользовательской фиче и
+# поэтому не должны попадать в отчёт «patches missing from descriptions.json».
+# Ключ — tech-имя (можно указывать как алиас, так и канон из [tech_aliases]).
+# Значение — свободный комментарий «почему игнорируем», скрипт его не читает.
+[ignored_tech]
+"fix/common" = "общий fix-патч, не отдельная фича"
+"func/1c/multicolumn_tests" = ""
+"func/auto_dump" = ""
+"func/controlfile" = ""
+"func/ext_io_timing_stat" = ""
+"func/hydra" = ""
+"func/iterate_pg_proc_for_profile" = ""
+"func/log_version" = ""
+"func/pg_additional_stats" = ""
+"func/redudant_mcv_calc" = ""
+"func/relation_open_hook" = ""
+"func/sysviews_out_test" = ""
+"func/sysviews_out_test/1c" = ""
+"func/sysviews_out_test/certified" = ""
+"func/sysviews_out_test/se" = ""
+"func/tde" = ""
+"func/version" = ""
+"perf/1c_groupby_alternative_paths/groupby_alternative_paths_tests" = ""
+"perf/enable_filter_predicates_reordering/with_delayed_temp_file" = ""
+"perf/insert_parallel/guc_default_disable" = ""
+"perf/insert_parallel/guc_default_enable" = ""
+"perf/resilient_collapse_limit" = "удален"
+"wal2json" = ""
 
 [versions."18"]
 editions = ["be", "se", "se1c"]
@@ -12,18 +69,18 @@ contrib  = "/home/kot/repo/tantor-db-18_1/tantor/contrib/contrib.json"
 
 [versions."17"]
 editions = ["be", "se", "se1c", "certified", "certified_2"]
-conf     = "/home/kot/repo/tantor-db-17_9/tantor/conf.json"
-contrib  = "/home/kot/repo/tantor-db-17_9/tantor/contrib/contrib.json"
+conf     = "/home/kot/repo/tantor-db-17_10/tantor/conf.json"
+contrib  = "/home/kot/repo/tantor-db-17_10/tantor/contrib/contrib.json"
 
 [versions."16"]
 editions = ["be", "se", "se1c", "certified"]
-conf     = "/home/kot/repo/tantor-db-16_13/tantor/conf.json"
-contrib  = "/home/kot/repo/tantor-db-16_13/tantor/contrib/contrib.json"
+conf     = "/home/kot/repo/tantor-db-16_14/tantor/conf.json"
+contrib  = "/home/kot/repo/tantor-db-16_14/tantor/contrib/contrib.json"
 
 [versions."15"]
 editions = ["be", "se", "se1c", "certified"]
-conf     = "/home/kot/repo/tantor-db-15_17/tantor/conf.json"
-contrib  = "/home/kot/repo/tantor-db-15_17/tantor/contrib/contrib.json"
+conf     = "/home/kot/repo/tantor-db-15_18/tantor/conf.json"
+contrib  = "/home/kot/repo/tantor-db-15_18/tantor/contrib/contrib.json"
 
 [versions."14"]
 editions = ["be", "se", "se1c"]
