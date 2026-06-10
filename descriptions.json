@@ -7,8 +7,7 @@
           "name": "64-битный счетчик транзакций (XID)",
           "tech": "func/xid64",
           "description": "[64-битный](https://docs.tantorlabs.ru/tdb/ru/latest/se/forced-shrinking.html) счетчик транзакций\nЛогическая репликация между кластерами СУБД с 32-битным и 64-битным идентификатором транзакций",
-          "matrix": {},
-          "doc_url": "https://docs.tantorlabs.ru/tdb/ru/latest/se/forced-shrinking.html"
+          "matrix": {}
         },
         {
           "name": "Улучшения SIMD-инструкций",

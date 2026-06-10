@@ -245,16 +245,22 @@ def build_output(config: dict,
 
     Per-feature `matrix` is composed of two layers:
       1) computed `"<version>-<edition_long_name>"` keys based on
-         (version, edition) cells from conf.json/contrib.json;
+         (version, edition) cells from conf.json/contrib.json AND on
+         `"pg-NN"` markers in the source matrix (see below);
       2) any extra keys preserved from descriptions.json's existing
-         `matrix` (notably `"pg-NN"` flags marking that the feature is
-         already in upstream PostgreSQL NN). Such keys are never
-         overwritten or dropped — the script only reshapes (1).
+         `matrix` (notably `"pg-NN"` flags themselves). Such keys are
+         never overwritten or dropped — the script only reshapes (1).
 
     Computed keys come first (config order: newest version → oldest,
     editions in their order under the version). Preserved keys come
     after: `pg-*` sorted by descending version, then anything else in
     its original order.
+
+    `pg-NN: true` semantics: "feature is already in upstream PostgreSQL
+    NN", therefore every Tantor edition of major version NN automatically
+    has the feature. Concretely, when the source matrix has `pg-NN: true`
+    and NN is a version declared in config.toml, the script marks every
+    `<NN>-<edition>` cell as `true` regardless of what conf.json says.
     """
     cell_tech = collect_cell_tech(config, loaded)
     display: dict[str, str] = config.get("edition_display_names") or {}
@@ -274,6 +280,21 @@ def build_output(config: dict,
         ver, _, rest = k.partition("-")
         return ver in known_versions and bool(rest)
 
+    def _pg_promoted_versions(source_matrix: dict) -> set[str]:
+        """Versions N for which `pg-N: true` in source matrix means
+        'feature is in upstream PG N, so every Tantor N edition has it'.
+        Only versions declared in config.toml count; foreign `pg-N`
+        markers (e.g. future `pg-19`) are silently kept as preserved
+        but don't expand into edition cells."""
+        out: set[str] = set()
+        for k, v in source_matrix.items():
+            if not v or not isinstance(k, str) or not k.startswith("pg-"):
+                continue
+            tail = k.split("-", 1)[1]
+            if tail in known_versions:
+                out.add(tail)
+        return out
+
     groups_out: list[OrderedDict] = []
     for g in descriptions.get("groups", []) or []:
         new_g: OrderedDict = OrderedDict()
@@ -281,17 +302,22 @@ def build_output(config: dict,
         features_out: list[OrderedDict] = []
         for f in g.get("features", []) or []:
             tech = f.get("tech", "") or ""
+            source_matrix = f.get("matrix") or {}
+            pg_versions = _pg_promoted_versions(source_matrix)
 
-            # 1. Compute fresh (version, edition) keys.
+            # 1. Compute fresh (version, edition) keys: a cell is set to
+            #    true if the feature's tech is present there OR if the
+            #    whole version was promoted via `pg-<N>: true`.
             computed: "OrderedDict[str, bool]" = OrderedDict()
             for v in versions:
+                promoted = v in pg_versions
                 for ed_short in config["versions"][v]["editions"]:
-                    if tech and tech in cell_tech.get((v, ed_short), set()):
+                    in_tech = bool(tech) and tech in cell_tech.get((v, ed_short), set())
+                    if in_tech or promoted:
                         long_name = display.get(ed_short, ed_short)
                         computed[f"{v}-{long_name}"] = True
 
             # 2. Carry forward anything else the source matrix has.
-            source_matrix = f.get("matrix") or {}
             preserved_items = [
                 (k, v) for k, v in source_matrix.items()
                 if not _is_recomputed_key(k)
